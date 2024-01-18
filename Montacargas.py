@@ -113,6 +113,8 @@ class Montacargas:
         glEnd()
         
     def drawTruck(self):
+        glPushMatrix()
+        glScale(10, 10, 10)
         # Base y techo
         self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
         self.drawRectangle(0.0, 4.0, 0.0, 2.2, 0.5, 2.0)
@@ -131,6 +133,8 @@ class Montacargas:
         self.drawCylinder(3.2, 1.0, -0.5, 0.5, 0.5, 'z')
         self.drawCylinder(0.7, 1.0, 2.0, 0.5, 0.5, 'z')
         self.drawCylinder(3.2, 1.0, 2.0, 0.5, 0.5, 'z')
+        
+        glPopMatrix()
         
     def update(self):
         """
