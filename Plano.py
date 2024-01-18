@@ -89,10 +89,10 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
     for i in range(nCubos):
-        montacargas.append(Cubo(DimBoard, 0.0, [3,3,3], [0.34, 0.19, 0.1]))
+        cubos.append(Cubo(DimBoard, 0.0, [3,3,3], [0.34, 0.19, 0.1]))
         
     for i in range(nMontacargas):
-        cubos.append(Cubo(DimBoard, 1.0, [3,3,3], [0,0,0]))
+        montacargas.append(Cubo(DimBoard, 1.0, [3,3,3], [0,0,0]))
 
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
