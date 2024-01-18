@@ -125,7 +125,6 @@ while not done:
             done = True
 
     display()
-    
 
     pygame.display.flip()
     pygame.time.wait(10)

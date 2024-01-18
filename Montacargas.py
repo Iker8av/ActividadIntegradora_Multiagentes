@@ -13,19 +13,13 @@ import numpy as np
 
 class Montacargas:
     
-    def __init__(self, dim, vel, cubos):
+    def __init__(self, dim, vel, scale, cubos):
         self.radius = math.sqrt(12)
         self.collision = False
+        self.scale = False
         self.vel = vel
         self.Cubos = cubos
         self.collided_cube = None
-
-        # self.x = 0
-        # self.y = 1
-        # self.z = 0
-        # self.width = 20
-        # self.height = 8
-        # self.depth = 20
         
         self.DimBoard = dim
         #Se inicializa una posicion aleatoria en el tablero
@@ -225,6 +219,32 @@ class Montacargas:
         glEnd()
         
     def drawTruck(self):
+        glPushMatrix()
+        glScale(self.scale, self.scale, self.scale)
+        glTranslatef(self.Position[0], self.Position[1], self.Position[2])
+        # Base y techo
+        self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
+        self.drawRectangle(0.0, 4.0, 0.0, 2.2, 0.5, 2.0)
+        
+        # Plataforma
+        self.drawRectangle(-2.0, 0.9, 0.0, 2.0, 0.3, 2.0)
+        
+        # Pilares
+        self.drawCylinder(0.2, 2.0, 0.2, 0.2, 2.0, 'y')
+        self.drawCylinder(0.4, 2.0, 1.8, 0.2, 2.0, 'y')
+        self.drawCylinder(2.0, 2.0, 1.8, 0.2, 2.0, 'y')
+        self.drawCylinder(2.0, 2.0, 0.2, 0.2, 2.0, 'y')
+        
+        # Ruedas
+        self.drawCylinder(0.7, 1.0, -0.5, 0.5, 0.5, 'z')
+        self.drawCylinder(3.2, 1.0, -0.5, 0.5, 0.5, 'z')
+        self.drawCylinder(0.7, 1.0, 2.0, 0.5, 0.5, 'z')
+        self.drawCylinder(3.2, 1.0, 2.0, 0.5, 0.5, 'z')
+        
+        glPopMatrix()
+        
+        
+    def draw(self, cubos):
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
 
