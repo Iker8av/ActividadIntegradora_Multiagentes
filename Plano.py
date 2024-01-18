@@ -121,7 +121,6 @@ while not done:
             done = True
 
     display()
-    
     cybertroca.drawTruck()
 
     pygame.display.flip()
