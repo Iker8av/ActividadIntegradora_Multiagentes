@@ -49,7 +49,7 @@ class Cubo:
         new_x = self.Position[0] + self.Direction[0]
         new_z = self.Position[2] + self.Direction[2]
         
-        #detecc de que el objeto no se salga del area de navegacion
+        # detecc de que el objeto no se salga del area de navegacion
         if(abs(new_x) <= self.DimBoard):
             self.Position[0] = new_x
         else:
