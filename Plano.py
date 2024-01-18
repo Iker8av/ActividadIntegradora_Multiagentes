@@ -71,6 +71,53 @@ def Axis():
     glVertex3f(0.0,0.0,Z_MAX)
     glEnd()
     glLineWidth(1.0)
+    
+def drawMainCube():
+    glPushMatrix()
+    glTranslatef(0, 15, 0)
+    glScaled(15, 15, 15)
+    glColor3f(1.0, 1.0, 1.0)
+    
+    points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
+                                [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0,-1.0], [-1.0, 1.0,-1.0]])
+    
+    glBegin(GL_QUADS)
+    glVertex3fv(points[0])
+    glVertex3fv(points[1])
+    glVertex3fv(points[2])
+    glVertex3fv(points[3])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[4])
+    glVertex3fv(points[5])
+    glVertex3fv(points[6])
+    glVertex3fv(points[7])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[0])
+    glVertex3fv(points[1])
+    glVertex3fv(points[5])
+    glVertex3fv(points[4])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[1])
+    glVertex3fv(points[2])
+    glVertex3fv(points[6])
+    glVertex3fv(points[5])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[2])
+    glVertex3fv(points[3])
+    glVertex3fv(points[7])
+    glVertex3fv(points[6])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[3])
+    glVertex3fv(points[0])
+    glVertex3fv(points[4])
+    glVertex3fv(points[7])
+    glEnd()
+    glPopMatrix()
 
 def Init():
     screen = pygame.display.set_mode(
@@ -106,9 +153,15 @@ def display():
     glVertex3d(DimBoard, 0, -DimBoard)
     glEnd()
     
-    for obj in cubos:
-        obj.draw()
-        obj.update()
+    drawMainCube()
+    
+    for cube in cubos:
+        cube.draw()
+        cube.update()
+        
+    for montacarga in montacargas:
+        montacarga.draw()
+        montacarga.update()
     
 done = False
 Init()
