@@ -18,6 +18,10 @@ class Montacargas:
         self.width = 5
         self.height = 2
         self.depth = 5
+        
+        self.scale = 10.0
+        self.velAni = 0.01
+
 
     def drawRectangle(self, x, y, z, width, height, depth):
         glColor3f(0.925, 0.19, 0.03)
@@ -113,12 +117,18 @@ class Montacargas:
         glEnd()
         
     def drawTruck(self):
+        glPushMatrix()
+        glTranslatef(0, 0, 0)
+        glScaled(self.scale, self.scale, self.scale)
         # Base y techo
         self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
         self.drawRectangle(0.0, 4.0, 0.0, 2.2, 0.5, 2.0)
         
         # Plataforma
+        glPushMatrix()
+        glTranslatef(0, self.velAni, 0)
         self.drawRectangle(-2.0, 0.9, 0.0, 2.0, 0.3, 2.0)
+        glPopMatrix()
         
         # Pilares
         self.drawCylinder(0.2, 2.0, 0.2, 0.2, 2.0, 'y')
@@ -132,6 +142,13 @@ class Montacargas:
         self.drawCylinder(0.7, 1.0, 2.0, 0.5, 0.5, 'z')
         self.drawCylinder(3.2, 1.0, 2.0, 0.5, 0.5, 'z')
         
+        glPopMatrix()
+    def animation(self,n):
+        self.velAni += n*1
+        if self.velAni >= 5:
+            self.velAni = 5
+        
+    
     def update(self):
         """
         Función que actualiza el ángulo de rotación del objeto.
