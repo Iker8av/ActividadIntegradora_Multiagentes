@@ -16,6 +16,7 @@ class Montacargas:
         self.color = color
         self.vel = vel
         self.Cubos = cubos
+        self.collided_cube = None
         
         #vertices del cubo
         self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
@@ -38,10 +39,11 @@ class Montacargas:
         self.Direction[2] /= m
         #Se cambia la magnitud del vector direccion
         self.Direction[0] *= vel
-        self.Direction[2] *= vel        
+        self.Direction[2] *= vel
 
     def update(self):
-        self.collisionDetection()
+        self.collisionDetection() # updates collision attribute
+        
         if self.collision == False:
             new_x = self.Position[0] + self.Direction[0]
             new_z = self.Position[2] + self.Direction[2]
@@ -60,34 +62,69 @@ class Montacargas:
                 self.Position[2] += self.Direction[2] 
         
         elif self.collision == True:
-            new_x = 0 - self.Position[0]
-            new_z = 0 - self.Position[2]
+            if self.collided_cube is not None:
+                new_x = 0 - self.Position[0]
+                new_z = 0 - self.Position[2]
 
-            # To ensure constant velocity
-            magnitude = math.sqrt(new_x ** 2 + new_z ** 2)
-            
-            if magnitude != 0:
-                # Normalize
-                new_x /= magnitude
-                new_z /= magnitude
+                # para asegurar una velocidad constante
+                magnitude = math.sqrt(new_x ** 2 + new_z ** 2)
+                
+                if magnitude != 0:
+                    # normalizamos el vector dirección
+                    new_x /= magnitude
+                    new_z /= magnitude
 
-                # Update the Montacargas direction
-                self.Direction[0] = new_x * self.vel
-                self.Direction[2] = new_z * self.vel
+                    # actualizamos velocidad
+                    self.Direction[0] = new_x * self.vel
+                    self.Direction[2] = new_z * self.vel
 
-            self.Position[0] += self.Direction[0]
-            self.Position[2] += self.Direction[2]
+                    # movemos al montacargas en la nueva dirección al centro
+                    self.Position[0] += self.Direction[0]
+                    self.Position[2] += self.Direction[2]
+                    
+                    # movemos al cubo colisionado igualmente al centro
+                    self.collided_cube.Position[0] += self.Direction[0]
+                    self.collided_cube.Position[2] += self.Direction[2]
 
-            
+                    # checamos si hemos llegado al centor
+                    if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
+                        
+                        # eliminamos el collided_cube de la lista Cubos
+                        if self.collided_cube in self.Cubos:
+                            self.Cubos.remove(self.collided_cube)
+
+                        # restauramos la dirección del montacargas a aleatoria
+                        self.Direction[0] = random.random()
+                        self.Direction[2] = random.random()
+
+                        # normalizamos
+                        m = math.sqrt(self.Direction[0] * self.Direction[0] + self.Direction[2] * self.Direction[2])
+                        self.Direction[0] /= m
+                        self.Direction[2] /= m
+                        # actualizamos la vel
+                        self.Direction[0] *= self.vel
+                        self.Direction[2] *= self.vel
+
+                        # reseteamos estado collision y la referencia al collided_cube
+                        self.collision = False
+                        self.collided_cube = None
+                        
+                        new_x = self.Position[0] + self.Direction[0]
+                        new_z = self.Position[2] + self.Direction[2]
+
+                        self.Position[0] = new_x
+                        self.Position[2] = new_z
+
     def collisionDetection(self):            
         for cube in self.Cubos:
-            if self != cube:
+            if self != cube and self.collided_cube == None and self.collision == False:
                 d_x = self.Position[0] - cube.Position[0]
                 d_z = self.Position[2] - cube.Position[2]
                 d_c = math.sqrt(d_x * d_x + d_z * d_z)
                 
                 if d_c - (self.radius + cube.radius) < 0.0:
                     self.collision = True
+                    self.collided_cube = cube  # guardamos la referencia al cubo colisionado
 
     def drawFaces(self):
         glBegin(GL_QUADS)
@@ -128,9 +165,9 @@ class Montacargas:
         glEnd()
     
     def draw(self):
-        glPushMatrix()
-        glTranslatef(self.Position[0], self.Position[1], self.Position[2])
-        glScaled(self.scale[0], self.scale[1], self.scale[2])
-        glColor3f(self.color[0], self.color[1], self.color[2])
-        self.drawFaces()
-        glPopMatrix()
+        glPushMatrix() # guardamos el estado de transformacion actual
+        glTranslatef(self.Position[0], self.Position[1], self.Position[2]) # trasladamos
+        glScaled(self.scale[0], self.scale[1], self.scale[2]) # escalamos el objeto
+        glColor3f(self.color[0], self.color[1], self.color[2]) # fijamos el color
+        self.drawFaces() # dibujamos las caras
+        glPopMatrix() # quitamos del pila
