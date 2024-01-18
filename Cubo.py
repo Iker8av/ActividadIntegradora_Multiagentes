@@ -1,6 +1,3 @@
-#Autor: Ivan Olmos Pineda
-
-
 import pygame
 from pygame.locals import *
 
@@ -15,11 +12,12 @@ import numpy as np
 
 class Cubo:
     
-    def __init__(self, dim, vel, scale, color):
+    def __init__(self, dim, vel, scale, color, cubos):
         self.scale = scale
         self.radius = math.sqrt(3) 
-        self.isCollided = False
+        self.collision = False
         self.color = color
+        self.Cubos = cubos
         
         #vertices del cubo
         self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
@@ -40,44 +38,38 @@ class Cubo:
         m = math.sqrt(self.Direction[0]*self.Direction[0] + self.Direction[2]*self.Direction[2])
         self.Direction[0] /= m
         self.Direction[2] /= m
-        #Se cambia la maginitud del vector direccion
+        #Se cambia la magnitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel        
 
     def update(self):
-        if (self.isCollided): return
-        new_x = self.Position[0] + self.Direction[0]
-        new_z = self.Position[2] + self.Direction[2]
-        
-        # detecc de que el objeto no se salga del area de navegacion
-        if(abs(new_x) <= self.DimBoard):
-            self.Position[0] = new_x
-        else:
-            self.Direction[0] *= -1.0
-            self.Position[0] += self.Direction[0]
-        
-        if(abs(new_z) <= self.DimBoard):
-            self.Position[2] = new_z
-        else:
-            self.Direction[2] *= -1.0
-            self.Position[2] += self.Direction[2] 
+        self.collisionDetection()
+        if self.collision == False:
+            new_x = self.Position[0] + self.Direction[0]
+            new_z = self.Position[2] + self.Direction[2]
             
-    def collision(self, listCubes):        
-        nextPosition = [self.Position[0] + self.Direction[0], self.Position[1] + self.Direction[1], self.Position[2] + self.Direction[2]]
-        
-        for cube in listCubes:
-            if (cube == self): return
+            # detecc de que el objeto no se salga del area de navegacion
+            if(abs(new_x) <= self.DimBoard):
+                self.Position[0] = new_x
+            else:
+                self.Direction[0] *= -1.0
+                self.Position[0] += self.Direction[0]
             
-            nextCubePos = [cube.Position[0] + cube.Direction[0], cube.Position[1] + cube.Direction[1], cube.Position[2] + cube.Direction[2]]
-            euclideanDistance = math.sqrt(math.pow(nextCubePos[0] - nextPosition[0], 2) + 
-                                          math.pow(nextCubePos[2] - nextPosition[2], 2))
-                        
-            if (euclideanDistance <= cube.radius + self.radius):
-                self.isCollided = True
-                self.Direction = [0,0,0]
-                cube.isCollided = True
-                cube.Direction = [0,0,0]
-                break
+            if(abs(new_z) <= self.DimBoard):
+                self.Position[2] = new_z
+            else:
+                self.Direction[2] *= -1.0
+                self.Position[2] += self.Direction[2] 
+            
+    def collisionDetection(self):            
+        for cube in self.Cubos:
+            if self != cube:
+                d_x = self.Position[0] - cube.Position[0]
+                d_z = self.Position[2] - cube.Position[2]
+                d_c = math.sqrt(d_x * d_x + d_z * d_z)
+                
+                if d_c - (self.radius + cube.radius) < 0.0:
+                    self.collision = True
 
     def drawFaces(self):
         glBegin(GL_QUADS)
