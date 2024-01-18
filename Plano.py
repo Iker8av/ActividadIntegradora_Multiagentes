@@ -12,6 +12,7 @@ import numpy as np
 import sys
 sys.path.append('..')
 from Cubo import Cubo
+from Montacargas import Montacargas
 
 screen_width = 1000
 screen_height = 700
@@ -45,6 +46,8 @@ pygame.init()
 #cubo = Cubo(DimBoard, 1.0)
 montacargas = []
 nMontacargas = 5
+
+cybertroca = Montacargas()
 
 cubos = []
 nCubos = 15
@@ -118,6 +121,8 @@ while not done:
             done = True
 
     display()
+    
+    cybertroca.drawTruck()
 
     pygame.display.flip()
     pygame.time.wait(10)
