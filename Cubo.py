@@ -1,3 +1,4 @@
+from typing import Optional
 import pygame
 from pygame.locals import *
 

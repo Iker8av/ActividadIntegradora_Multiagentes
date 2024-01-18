@@ -12,6 +12,7 @@ import numpy as np
 import sys
 sys.path.append('..')
 from Cubo import Cubo
+from Montacargas import Montacargas
 
 screen_width = 1000
 screen_height = 700
@@ -90,9 +91,10 @@ def Init():
     
     for i in range(nCubos):
         cubos.append(Cubo(DimBoard, 0.0, [3,3,3], [0.34, 0.19, 0.1], cubos))
-        
+
     for i in range(nMontacargas):
-        cubos.append(Cubo(DimBoard, 1.0, [3,3,3], [0,0,0], cubos))
+        montacargas.append(Montacargas(DimBoard, 1.0, [3,3,3], [0,0,0], cubos))
+
 
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -107,6 +109,10 @@ def display():
     glEnd()
     
     for obj in cubos:
+        obj.draw()
+        obj.update()
+
+    for obj in montacargas:
         obj.draw()
         obj.update()
     
