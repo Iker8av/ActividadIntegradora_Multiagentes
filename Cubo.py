@@ -15,7 +15,7 @@ class Cubo:
     
     def __init__(self, dim, scale, color):
         self.scale = scale
-        self.radius = math.sqrt(3) 
+        self.radius = math.sqrt(4)
         self.color = color
         
         #vertices del cubo

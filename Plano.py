@@ -47,6 +47,8 @@ pygame.init()
 montacargas = []
 nMontacargas = 5
 
+# cybertroca = Montacargas()
+
 cubos = []
 nCubos = 15
 
@@ -90,10 +92,10 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
     for i in range(nCubos):
-        cubos.append(Cubo(DimBoard, [3,3,3], [0.34, 0.19, 0.1]))
+        cubos.append(Cubo(DimBoard, [5,5,5], [0.34, 0.19, 0.1]))
 
     for i in range(nMontacargas):
-        montacargas.append(Montacargas(DimBoard, 1.0, [3,3,3], [0,0,0], cubos))
+        montacargas.append(Montacargas(DimBoard, 1.0, cubos))
 
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -110,9 +112,10 @@ def display():
     for obj in cubos:
         obj.draw()
 
-    for obj in montacargas:
-        obj.draw()
-        obj.update()
+    for cybertroca in montacargas:
+        cybertroca.drawTruck()
+        cybertroca.update()
+
     
 done = False
 Init()
@@ -122,6 +125,7 @@ while not done:
             done = True
 
     display()
+    
 
     pygame.display.flip()
     pygame.time.wait(10)
