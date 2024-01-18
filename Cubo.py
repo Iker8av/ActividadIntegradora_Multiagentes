@@ -15,10 +15,11 @@ import numpy as np
 
 class Cubo:
     
-    def __init__(self, dim, vel, scale):
+    def __init__(self, dim, vel, scale, color):
         self.scale = scale
         self.radius = math.sqrt(3) 
         self.isCollided = False
+        self.color = color
         
         #vertices del cubo
         self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
@@ -120,6 +121,6 @@ class Cubo:
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScaled(self.scale[0], self.scale[1], self.scale[2])
-        glColor3f(1.0, 1.0, 1.0)
+        glColor3f(self.color[0], self.color[1], self.color[2])
         self.drawFaces()
         glPopMatrix()
