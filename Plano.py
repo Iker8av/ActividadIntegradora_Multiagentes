@@ -43,7 +43,6 @@ DimBoard = 200
 
 pygame.init()
 
-#cubo = Cubo(DimBoard, 1.0)
 montacargas = []
 nMontacargas = 5
 
@@ -74,12 +73,61 @@ def Axis():
     glVertex3f(0.0,0.0,Z_MAX)
     glEnd()
     glLineWidth(1.0)
-
+    
+def drawMainCube():
+    glPushMatrix()
+    glTranslatef(0, 15, 0)
+    glScaled(15, 15, 15)
+    glColor3f(1.0, 1.0, 1.0)
+    
+    points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
+                                [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0,-1.0], [-1.0, 1.0,-1.0]])
+    
+    glBegin(GL_QUADS)
+    glVertex3fv(points[0])
+    glVertex3fv(points[1])
+    glVertex3fv(points[2])
+    glVertex3fv(points[3])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[4])
+    glVertex3fv(points[5])
+    glVertex3fv(points[6])
+    glVertex3fv(points[7])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[0])
+    glVertex3fv(points[1])
+    glVertex3fv(points[5])
+    glVertex3fv(points[4])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[1])
+    glVertex3fv(points[2])
+    glVertex3fv(points[6])
+    glVertex3fv(points[5])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[2])
+    glVertex3fv(points[3])
+    glVertex3fv(points[7])
+    glVertex3fv(points[6])
+    glEnd()
+    glBegin(GL_QUADS)
+    glVertex3fv(points[3])
+    glVertex3fv(points[0])
+    glVertex3fv(points[4])
+    glVertex3fv(points[7])
+    glEnd()
+    glPopMatrix()
+    
 def Init():
     screen = pygame.display.set_mode(
         (screen_width, screen_height), DOUBLEBUF | OPENGL)
     pygame.display.set_caption("OpenGL: cubos")
-
+    
+    loadImage()
+    
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(FOVY, screen_width/screen_height, ZNEAR, ZFAR)
@@ -98,20 +146,42 @@ def Init():
         montacargas.append(Montacargas(dim=DimBoard, 
                                        vel=1.0,
                                        scale=5,
-                                       cubos=cubos)
-                                       )
+                                       cubos=cubos))
+    
+def loadImage():
+    img = pygame.image.load("./Texturas/asfalto.jpg").convert()
+    textureData = pygame.image.tostring(img, "RGB", 1)
+    image_width, image_height = img.get_rect().size
+    bgImgGL = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, bgImgGL)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width, image_height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData)
+    glGenerateMipmap(GL_TEXTURE_2D)
+    glActiveTexture(GL_TEXTURE0)
+    glBindTexture(GL_TEXTURE_2D, bgImgGL)
 
+def drawFloor():
+    glEnable(GL_TEXTURE_2D)
+    glColor3f(0.65, 0.65, 0.65)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0, 0)
+    glVertex3d(-DimBoard, 0, -DimBoard)
+    glTexCoord2f(0, 1)
+    glVertex3d(-DimBoard, 0, DimBoard)
+    glTexCoord2f(1, 1)
+    glVertex3d(DimBoard, 0, DimBoard)
+    glTexCoord2f(1, 0)
+    glVertex3d(DimBoard, 0, -DimBoard)
+    glEnd()
+    glDisable(GL_TEXTURE_2D)
+
+    
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     Axis()
-    #Se dibuja el plano gris
-    glColor3f(0.3, 0.3, 0.3)
-    glBegin(GL_QUADS)
-    glVertex3d(-DimBoard, 0, -DimBoard)
-    glVertex3d(-DimBoard, 0, DimBoard)
-    glVertex3d(DimBoard, 0, DimBoard)
-    glVertex3d(DimBoard, 0, -DimBoard)
-    glEnd()
+    
+    drawFloor()
+    drawMainCube()
     
     for obj in cubos:
         obj.draw()
@@ -119,7 +189,6 @@ def display():
     for cybertroca in montacargas:
         cybertroca.drawTruck()
         cybertroca.update()
-
     
 done = False
 Init()
