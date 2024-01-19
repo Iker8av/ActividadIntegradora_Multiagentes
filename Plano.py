@@ -158,7 +158,7 @@ def loadImage():
 
 def drawFloor():
     glEnable(GL_TEXTURE_2D)
-    glColor3f(1.0, 1.0, 1.0)
+    glColor3f(0.65, 0.65, 0.65)
     glBegin(GL_QUADS)
     glTexCoord2f(0, 0)
     glVertex3d(-DimBoard, 0, -DimBoard)
