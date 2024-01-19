@@ -16,7 +16,7 @@ class Montacargas:
     def __init__(self, dim, vel, scale, cubos):
         self.radius = math.sqrt(12)
         self.collision = False
-        self.scale = False
+        self.scale = scale
         self.vel = vel
         self.Cubos = cubos
         self.collided_cube = None
@@ -220,8 +220,8 @@ class Montacargas:
         
     def drawTruck(self):
         glPushMatrix()
-        glScale(self.scale, self.scale, self.scale)
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
+        glScalef(self.scale, self.scale, self.scale)
         # Base y techo
         self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
         self.drawRectangle(0.0, 4.0, 0.0, 2.2, 0.5, 2.0)
@@ -244,27 +244,3 @@ class Montacargas:
         glPopMatrix()
         
         
-    def draw(self, cubos):
-        glPushMatrix()
-        glTranslatef(self.Position[0], self.Position[1], self.Position[2])
-
-        # Base y techo
-        self.drawRectangle(0.0, 1.0, 0.0, 16.0, 4.0, 8.0)
-        self.drawRectangle(0.0, 16.0, 0.0, 8.8, 2.0, 8.0)
-
-        # Plataforma
-        self.drawRectangle(-8.0, 3.6, 0.0, 8.0, 1.2, 8.0)
-
-        # Pilares
-        self.drawCylinder(0.8, 8.0, 0.8, 0.8, 8.0, 'y')
-        self.drawCylinder(1.6, 8.0, 7.2, 0.8, 8.0, 'y')
-        self.drawCylinder(8.0, 8.0, 7.2, 0.8, 8.0, 'y')
-        self.drawCylinder(8.0, 8.0, 0.8, 0.8, 8.0, 'y')
-
-        # Ruedas
-        self.drawCylinder(2.8, 4.0, -2.0, 2.0, 2.0, 'z')
-        self.drawCylinder(12.8, 4.0, -2.0, 2.0, 2.0, 'z')
-        self.drawCylinder(2.8, 4.0, 8.0, 2.0, 2.0, 'z')
-        self.drawCylinder(12.8, 4.0, 8.0, 2.0, 2.0, 'z')
-
-        glPopMatrix()
