@@ -20,6 +20,7 @@ class Montacargas:
         self.vel = vel
         self.Cubos = cubos
         self.collided_cube = None
+        self.velAni = 0
         
         self.DimBoard = dim
         #Se inicializa una posicion aleatoria en el tablero
@@ -39,6 +40,7 @@ class Montacargas:
         #Se cambia la magnitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel
+        
 
     def update(self):
         self.collisionDetection() # updates collision attribute
@@ -68,10 +70,12 @@ class Montacargas:
                 # para asegurar una velocidad constante
                 magnitude = math.sqrt(new_x ** 2 + new_z ** 2)
                 
+                self.animation(1)
                 if magnitude != 0:
                     # normalizamos el vector dirección
                     new_x /= magnitude
                     new_z /= magnitude
+                    
 
                     # actualizamos velocidad
                     self.Direction[0] = new_x * self.vel
@@ -219,15 +223,19 @@ class Montacargas:
         glEnd()
         
     def drawTruck(self):
+        
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScalef(self.scale, self.scale, self.scale)
         # Base y techo
         self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
         self.drawRectangle(0.0, 4.0, 0.0, 2.2, 0.5, 2.0)
-        
-        # Plataforma
+
+        #Plataforma
+        glPushMatrix()
+        glTranslatef(0, self.velAni, 0)
         self.drawRectangle(-2.0, 0.9, 0.0, 2.0, 0.3, 2.0)
+        glPopMatrix()
         
         # Pilares
         self.drawCylinder(0.2, 2.0, 0.2, 0.2, 2.0, 'y')
@@ -242,5 +250,14 @@ class Montacargas:
         self.drawCylinder(3.2, 1.0, 2.0, 0.5, 0.5, 'z')
         
         glPopMatrix()
+    
+    def animation(self,n):
+        vel = 0.1
+        self.velAni += n* vel
+        if self.velAni >= self.scale:
+            self.velAni = self.scale
+            
+        
+    
         
         

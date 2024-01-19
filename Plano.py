@@ -45,7 +45,7 @@ pygame.init()
 
 #cubo = Cubo(DimBoard, 1.0)
 montacargas = []
-nMontacargas = 5
+nMontacargas = 1
 
 # cybertroca = Montacargas()
 
