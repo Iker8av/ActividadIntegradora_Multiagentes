@@ -118,12 +118,14 @@ def drawMainCube():
     glVertex3fv(points[7])
     glEnd()
     glPopMatrix()
-
+    
 def Init():
     screen = pygame.display.set_mode(
         (screen_width, screen_height), DOUBLEBUF | OPENGL)
     pygame.display.set_caption("OpenGL: cubos")
-
+    
+    loadImage()
+    
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(FOVY, screen_width/screen_height, ZNEAR, ZFAR)
@@ -140,19 +142,41 @@ def Init():
         
     for i in range(nMontacargas):
         montacargas.append(Cubo(DimBoard, 1.0, [3,3,3], [0,0,0]))
+        
+    
+def loadImage():
+    img = pygame.image.load("./Texturas/asfalto.jpg").convert()
+    textureData = pygame.image.tostring(img, "RGB", 1)
+    image_width, image_height = img.get_rect().size
+    bgImgGL = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, bgImgGL)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width, image_height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData)
+    glGenerateMipmap(GL_TEXTURE_2D)
+    glActiveTexture(GL_TEXTURE0)
+    glBindTexture(GL_TEXTURE_2D, bgImgGL)
 
+def drawFloor():
+    glEnable(GL_TEXTURE_2D)
+    glColor3f(1.0, 1.0, 1.0)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0, 0)
+    glVertex3d(-DimBoard, 0, -DimBoard)
+    glTexCoord2f(0, 1)
+    glVertex3d(-DimBoard, 0, DimBoard)
+    glTexCoord2f(1, 1)
+    glVertex3d(DimBoard, 0, DimBoard)
+    glTexCoord2f(1, 0)
+    glVertex3d(DimBoard, 0, -DimBoard)
+    glEnd()
+    glDisable(GL_TEXTURE_2D)
+
+    
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     Axis()
-    #Se dibuja el plano gris
-    glColor3f(0.3, 0.3, 0.3)
-    glBegin(GL_QUADS)
-    glVertex3d(-DimBoard, 0, -DimBoard)
-    glVertex3d(-DimBoard, 0, DimBoard)
-    glVertex3d(DimBoard, 0, DimBoard)
-    glVertex3d(DimBoard, 0, -DimBoard)
-    glEnd()
     
+    drawFloor()
     drawMainCube()
     
     for cube in cubos:
