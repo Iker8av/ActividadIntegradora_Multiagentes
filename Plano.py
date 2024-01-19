@@ -95,7 +95,11 @@ def Init():
         cubos.append(Cubo(DimBoard, [5,5,5], [0.34, 0.19, 0.1]))
 
     for i in range(nMontacargas):
-        montacargas.append(Montacargas(DimBoard, 1.0, 5, cubos))
+        montacargas.append(Montacargas(dim=DimBoard, 
+                                       vel=1.0,
+                                       scale=5,
+                                       cubos=cubos)
+                                       )
 
 def display():  
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
