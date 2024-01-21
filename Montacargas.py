@@ -1,3 +1,4 @@
+from enum import Enum
 import math
 import pygame
 from pygame.locals import *
@@ -11,6 +12,13 @@ import random
 import math
 import numpy as np
 
+class EstadosMontacargas(Enum):
+    NAVEGACION = 0
+    COLISION = 1
+    REORIENTACION = 2
+    AVANDESTINO = 3
+    DEPOSITANDO = 4
+
 class Montacargas:
     
     def __init__(self, dim, vel, scale, cubos):
@@ -21,6 +29,8 @@ class Montacargas:
         self.Cubos = cubos
         self.collided_cube = None
         self.rotation_angle = 0.0
+
+        self.estado = EstadosMontacargas.NAVEGACION
         
         self.DimBoard = dim
         #Se inicializa una posicion aleatoria en el tablero
