@@ -111,12 +111,9 @@ class Montacargas:
         if self.altura < self.Ymax:
             if self.collided_cube is not None:        
                 
-
-                # Update the platform height and the collided cube's position
                 self.altura += 0.05
                 self.collided_cube.Position[1] += 0.3
 
-                # Draw the collided cube in its new position
                 self.collided_cube.draw()
 
         else:
@@ -184,11 +181,9 @@ class Montacargas:
         if self.altura > self.Ymin:
             if self.collided_cube is not None:        
                 
-                # Update the platform height and the collided cube's position
                 self.altura -= 0.05
                 self.collided_cube.Position[1] -= 0.3
 
-                # Draw the collided cube in its new position
                 self.collided_cube.draw()
         else:
             # eliminamos el collided_cube de la lista Cubos
