@@ -27,7 +27,6 @@ class Montacargas:
         self.vel = vel
         self.Cubos = cubos
         self.collided_cube = None
-        self.rotation_angle = 0.0
         
         self.Ymin = 0.9
         self.Ymax = 10
@@ -326,7 +325,6 @@ class Montacargas:
     def drawTruck(self):
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
-        glRotatef(self.rotation_angle, 0, 1, 0)
         glScalef(self.scale, self.scale, self.scale)
 
         # Base y techo
