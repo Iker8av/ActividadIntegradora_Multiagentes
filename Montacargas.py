@@ -6,10 +6,19 @@ import random
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+from enum import Enum
 
 import random
 import math
 import numpy as np
+
+class EstadosMontacargas(Enum):
+    NAVEGACION = 0
+    COLISION = 1
+    REORIENTACION = 2
+    AVANDESTINO = 3
+    DEPOSITANDO = 4
+    
 
 class Montacargas:
     
@@ -21,6 +30,9 @@ class Montacargas:
         self.Cubos = cubos
         self.collided_cube = None
         self.velAni = 0
+        self.YBase = 0.0*scale
+        self.YMax = 3.8*scale
+        self.estado = EstadosMontacargas.NAVEGACION
         
         self.DimBoard = dim
         #Se inicializa una posicion aleatoria en el tablero
@@ -43,6 +55,19 @@ class Montacargas:
         
 
     def update(self):
+        if(self.estado == EstadosMontacargas.NAVEGACION):
+            self.movementMonta()
+        elif(self.estado == EstadosMontacargas.COLISION):
+            self.animationUp()
+        elif(self.estado == EstadosMontacargas.REORIENTACION):
+            pass
+        elif(self.estado == EstadosMontacargas.AVANDESTINO):
+            self.reorientacion()
+        elif(self.estado == EstadosMontacargas.DEPOSITANDO):
+            self.animationDown()
+
+                        
+    def movementMonta(self):
         self.collisionDetection() # updates collision attribute
         
         if self.collision == False:
@@ -64,59 +89,8 @@ class Montacargas:
         
         elif self.collision == True:
             if self.collided_cube is not None:
-                new_x = 0 - self.Position[0]
-                new_z = 0 - self.Position[2]
+                self.estado = EstadosMontacargas.COLISION
 
-                # para asegurar una velocidad constante
-                magnitude = math.sqrt(new_x ** 2 + new_z ** 2)
-                
-                self.animation(1)
-                if magnitude != 0:
-                    # normalizamos el vector dirección
-                    new_x /= magnitude
-                    new_z /= magnitude
-                    
-
-                    # actualizamos velocidad
-                    self.Direction[0] = new_x * self.vel
-                    self.Direction[2] = new_z * self.vel
-
-                    # movemos al montacargas en la nueva dirección al centro
-                    self.Position[0] += self.Direction[0]
-                    self.Position[2] += self.Direction[2]
-                    
-                    # movemos al cubo colisionado igualmente al centro
-                    self.collided_cube.Position[0] += self.Direction[0]
-                    self.collided_cube.Position[2] += self.Direction[2]
-
-                    # checamos si hemos llegado al centor
-                    if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
-                        
-                        # eliminamos el collided_cube de la lista Cubos
-                        if self.collided_cube in self.Cubos:
-                            self.Cubos.remove(self.collided_cube)
-
-                        # restauramos la dirección del montacargas a aleatoria
-                        self.Direction[0] = random.random()
-                        self.Direction[2] = random.random()
-
-                        # normalizamos
-                        m = math.sqrt(self.Direction[0] * self.Direction[0] + self.Direction[2] * self.Direction[2])
-                        self.Direction[0] /= m
-                        self.Direction[2] /= m
-                        # actualizamos la vel
-                        self.Direction[0] *= self.vel
-                        self.Direction[2] *= self.vel
-
-                        # reseteamos estado collision y la referencia al collided_cube
-                        self.collision = False
-                        self.collided_cube = None
-                        
-                        new_x = self.Position[0] + self.Direction[0]
-                        new_z = self.Position[2] + self.Direction[2]
-
-                        self.Position[0] = new_x
-                        self.Position[2] = new_z
 
     def collisionDetection(self):            
         for cube in self.Cubos:
@@ -128,6 +102,59 @@ class Montacargas:
                 if d_c - (self.radius + cube.radius) < 0.0:
                     self.collision = True
                     self.collided_cube = cube  # guardamos la referencia al cubo colisionado
+    
+    def reorientacion(self):
+        new_x = 0 - self.Position[0]
+        new_z = 0 - self.Position[2]
+
+        # para asegurar una velocidad constante
+        magnitude = math.sqrt(new_x ** 2 + new_z ** 2)
+        if magnitude != 0:
+            # normalizamos el vector dirección
+            new_x /= magnitude
+            new_z /= magnitude
+            
+
+            # actualizamos velocidad
+            self.Direction[0] = new_x * self.vel
+            self.Direction[2] = new_z * self.vel
+
+            # movemos al montacargas en la nueva dirección al centro
+            self.Position[0] += self.Direction[0]
+            self.Position[2] += self.Direction[2]
+            
+            # movemos al cubo colisionado igualmente al centro
+            self.collided_cube.Position[0] += self.Direction[0]
+            self.collided_cube.Position[2] += self.Direction[2]
+
+            # checamos si hemos llegado al centor
+            if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
+                
+                # eliminamos el collided_cube de la lista Cubos
+                if self.collided_cube in self.Cubos:
+                    self.Cubos.remove(self.collided_cube)
+
+                # restauramos la dirección del montacargas a aleatoria
+                self.Direction[0] = random.random()
+                self.Direction[2] = random.random()
+
+                # normalizamos
+                m = math.sqrt(self.Direction[0] * self.Direction[0] + self.Direction[2] * self.Direction[2])
+                self.Direction[0] /= m
+                self.Direction[2] /= m
+                # actualizamos la vel
+                self.Direction[0] *= self.vel
+                self.Direction[2] *= self.vel
+
+                # reseteamos estado collision y la referencia al collided_cube
+                self.collision = False
+                self.collided_cube = None
+                
+                new_x = self.Position[0] + self.Direction[0]
+                new_z = self.Position[2] + self.Direction[2]
+
+                self.Position[0] = new_x
+                self.Position[2] = new_z
 
     def drawRectangle(self, x, y, z, width, height, depth):
         glColor3f(0.925, 0.19, 0.03)
@@ -251,11 +278,17 @@ class Montacargas:
         
         glPopMatrix()
     
-    def animation(self,n):
+    def animationUp(self):
         vel = 0.1
-        self.velAni += n* vel
-        if self.velAni >= self.scale:
-            self.velAni = self.scale
+        self.velAni += vel
+        if self.velAni >= self.YMax:
+            self.velAni = self.YMax
+
+    def animationDown(self):
+        vel = 0.1
+        self.velAni += vel
+        if self.velAni >= self.YBase:
+            self.velAni = self.YBase
             
         
     
