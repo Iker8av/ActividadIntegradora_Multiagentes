@@ -140,7 +140,7 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
     for i in range(nCubos):
-        cubos.append(Cubo(DimBoard, [5,5,5], [0.34, 0.19, 0.1]))
+        cubos.append(Cubo(DimBoard, [5,5,5], [0.34, 0.19, 0.1], False))
 
     for i in range(nMontacargas):
         montacargas.append(Montacargas(dim=DimBoard, 

@@ -13,11 +13,12 @@ import numpy as np
 
 class Cubo:
     
-    def __init__(self, dim, scale, color):
+    def __init__(self, dim, scale, color, colisionado):
         self.scale = scale
         self.radius = math.sqrt(4)
         self.color = color
-        
+        self.colisionado = False
+
         #vertices del cubo
         self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0,-1.0], [-1.0, 1.0,-1.0]])
