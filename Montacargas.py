@@ -14,12 +14,13 @@ import numpy as np
 class Montacargas:
     
     def __init__(self, dim, vel, scale, cubos):
-        self.radius = math.sqrt(12)
+        self.radius = 10
         self.collision = False
         self.scale = scale
         self.vel = vel
         self.Cubos = cubos
         self.collided_cube = None
+        self.rotation_angle = 0.0
         
         self.DimBoard = dim
         #Se inicializa una posicion aleatoria en el tablero
@@ -59,6 +60,8 @@ class Montacargas:
             else:
                 self.Direction[2] *= -1.0
                 self.Position[2] += self.Direction[2] 
+            
+            self.rotation_angle = math.atan2(self.Direction[2], self.Direction[0]) * (180 / math.pi)
         
         elif self.collision == True:
             if self.collided_cube is not None:
@@ -221,7 +224,9 @@ class Montacargas:
     def drawTruck(self):
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
+        glRotatef(self.rotation_angle, 0, 1, 0)
         glScalef(self.scale, self.scale, self.scale)
+
         # Base y techo
         self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
         self.drawRectangle(0.0, 4.0, 0.0, 2.2, 0.5, 2.0)
@@ -242,5 +247,3 @@ class Montacargas:
         self.drawCylinder(3.2, 1.0, 2.0, 0.5, 0.5, 'z')
         
         glPopMatrix()
-        
-        
