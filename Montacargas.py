@@ -32,6 +32,10 @@ class Montacargas:
         self.Ymax = 10
         self.estado = EstadosMontacargas.NAVEGACION
         self.altura = self.Ymin
+
+        self.target_rotation_angle = 180.0  # Cambia este valor al ángulo deseado
+        self.current_rotation_angle = 0.0
+        self.rotation_speed = 1.0  # Puedes ajustar la velocidad de rotación según sea necesario
         
         self.DimBoard = dim
         
@@ -96,7 +100,7 @@ class Montacargas:
                 self.collided_cube.Position[1] += 0.5
                 self.collided_cube.draw()
         else:
-            self.estado = EstadosMontacargas.AVANDESTINO
+            self.estado = EstadosMontacargas.REORIENTACION
 
 
 
@@ -130,7 +134,7 @@ class Montacargas:
                 self.collided_cube.Position[0] += self.Direction[0]
                 self.collided_cube.Position[2] += self.Direction[2]
 
-                # checamos si hemos llegado al centor
+                # checamos si hemos llegado al centro
                 if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
                         
                     # eliminamos el collided_cube de la lista Cubos
@@ -159,6 +163,23 @@ class Montacargas:
 
                         self.Position[0] = new_x
                         self.Position[2] = new_z
+
+    def reorientacion(self):
+        '''
+        Función para efectuar la animación de la rotación del montacargas hacia el punto destino.
+        '''
+        if self.current_rotation_angle < self.target_rotation_angle:
+            self.current_rotation_angle += self.rotation_speed
+            if self.current_rotation_angle > self.target_rotation_angle:
+                self.current_rotation_angle = self.target_rotation_angle
+
+        # Calcular la dirección basada en el ángulo actual de rotación
+        radians = math.radians(self.current_rotation_angle)
+        self.Direction[0] = math.cos(radians) * self.vel
+        self.Direction[2] = math.sin(radians) * self.vel
+
+        self.drawTruck()
+
 
     def update(self):
         if (self.estado == EstadosMontacargas.NAVEGACION):
@@ -326,6 +347,18 @@ class Montacargas:
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         glScalef(self.scale, self.scale, self.scale)
+
+        # Calculate the rotation angle based on the normalized direction
+        angle = math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi)
+
+        # Translate to the center of the truck
+        glTranslatef(1.0, 2.5, 1.0)
+
+        # Rotate the truck around the y-axis
+        glRotatef(angle, 0, 1, 0)
+
+        # Translate back to the original position
+        glTranslatef(-1.0, -2.5, -1.0)
 
         # Base y techo
         self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
