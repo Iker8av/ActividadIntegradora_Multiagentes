@@ -28,16 +28,15 @@ class Montacargas:
         self.vel = vel
         self.Cubos = cubos
         self.collided_cube = None
-        self.collision_time = None
         
         self.Ymin = 0.9
         self.Ymax = 10
         self.estado = EstadosMontacargas.NAVEGACION
         self.altura = self.Ymin
 
-        self.target_rotation_angle = 180.0  # Cambia este valor al ángulo deseado
+        self.target_rotation_angle = 180.0 # ángulo deseado al centro (0,0,0)
         self.current_rotation_angle = 0.0
-        self.rotation_speed = 1.0  # Puedes ajustar la velocidad de rotación según sea necesario
+        self.rotation_speed = 1.0  #velocidad de rotación
         
         self.DimBoard = dim
         
@@ -76,7 +75,6 @@ class Montacargas:
                 if d_c - (self.radius + cube.radius) < 0.0:
                     self.estado = EstadosMontacargas.COLISION # actualizamos el estado del montacargas a COLISION
                     self.collided_cube = cube  # guardamos la referencia al cubo colisionado
-                    self.collision_time = time.time() # guardamos el momento de la colisión
                     cube.colisionado = True # actualizamos el estado del cubo en particular
 
     def random_movement(self):
@@ -106,16 +104,19 @@ class Montacargas:
     def platform_animation(self):
         '''
         Función para efectuar la animación de la plataforma.
-            - Se ejecuta inmediatamente después de la detección de una colisión.
+        
+        - Se ejecuta inmediatamente después de la detección de una colisión.
         '''
+        
         if self.altura < self.Ymax:
-            if self.collided_cube is not None:        
-                
                 self.altura += 0.05
-                self.collided_cube.Position[1] += 0.3
-
+                
                 self.collided_cube.draw()
 
+                # posición del cubo en la plataforma montacargas
+                self.collided_cube.Position[0] = self.Position[0] - 4.0
+                self.collided_cube.Position[1] = (self.altura * self.altura) + self.collided_cube.radius
+                self.collided_cube.Position[2] = self.Position[2] + 4.0
         else:
             self.estado = EstadosMontacargas.REORIENTACION
 
@@ -361,18 +362,15 @@ class Montacargas:
     def drawTruck(self):
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
+        
         glScalef(self.scale, self.scale, self.scale)
 
-        # Calculate the rotation angle based on the normalized direction
-        angle = math.atan2(self.Direction[0], self.Direction[2]) * (90 / math.pi)
+        angle = math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi)
 
-        # Translate to the center of the truck
         glTranslatef(1.0, 2.5, 1.0)
 
-        # Rotate the truck around the y-axis
         glRotatef(angle, 0, 1, 0)
 
-        # Translate back to the original position
         glTranslatef(-1.0, -2.5, -1.0)
 
         # Base y techo

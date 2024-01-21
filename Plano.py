@@ -46,8 +46,6 @@ pygame.init()
 montacargas = []
 nMontacargas = 5
 
-# cybertroca = Montacargas()
-
 cubos = []
 nCubos = 15
 
