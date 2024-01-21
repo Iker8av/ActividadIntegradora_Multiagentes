@@ -1,5 +1,6 @@
 from enum import Enum
 import math
+import time
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -27,6 +28,7 @@ class Montacargas:
         self.vel = vel
         self.Cubos = cubos
         self.collided_cube = None
+        self.collision_time = None
         
         self.Ymin = 0.9
         self.Ymax = 10
@@ -94,14 +96,18 @@ class Montacargas:
             - Se ejecuta inmediatamente después de la detección de una colisión.
         '''
         if self.altura < self.Ymax:
-            if self.collided_cube != None:
-                self.drawTruck()
-                self.altura += 0.5
-                self.collided_cube.Position[1] += 0.5
+            if self.collided_cube is not None:        
+                
+
+                # Update the platform height and the collided cube's position
+                self.altura += 0.05
+                self.collided_cube.Position[1] += 0.3
+
+                # Draw the collided cube in its new position
                 self.collided_cube.draw()
+
         else:
             self.estado = EstadosMontacargas.REORIENTACION
-
 
 
     def advance_to_destiny(self):
@@ -137,32 +143,8 @@ class Montacargas:
                 # checamos si hemos llegado al centro
                 if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
                         
-                    # eliminamos el collided_cube de la lista Cubos
-                    if self.collided_cube in self.Cubos:
-                        self.Cubos.remove(self.collided_cube)
-
-                        # restauramos la dirección del montacargas a aleatoria
-                        self.Direction[0] = random.random()
-                        self.Direction[2] = random.random()
-
-                        # normalizamos
-                        m = math.sqrt(self.Direction[0] * self.Direction[0] + self.Direction[2] * self.Direction[2])
-                        self.Direction[0] /= m
-                        self.Direction[2] /= m
-
-                        # actualizamos la velocidad
-                        self.Direction[0] *= self.vel
-                        self.Direction[2] *= self.vel
-
-                        # reseteamos estado collision y la referencia al collided_cube
-                        self.estado = EstadosMontacargas.NAVEGACION
-                        self.collided_cube = None
-                        
-                        new_x = self.Position[0] + self.Direction[0]
-                        new_z = self.Position[2] + self.Direction[2]
-
-                        self.Position[0] = new_x
-                        self.Position[2] = new_z
+                    # efectuamos el dropdown
+                    self.estado = EstadosMontacargas.DEPOSITANDO
 
     def reorientacion(self):
         '''
@@ -172,6 +154,8 @@ class Montacargas:
             self.current_rotation_angle += self.rotation_speed
             if self.current_rotation_angle > self.target_rotation_angle:
                 self.current_rotation_angle = self.target_rotation_angle
+        else:
+            self.estado = EstadosMontacargas.AVANDESTINO
 
         # Calcular la dirección basada en el ángulo actual de rotación
         radians = math.radians(self.current_rotation_angle)
@@ -179,6 +163,49 @@ class Montacargas:
         self.Direction[2] = math.sin(radians) * self.vel
 
         self.drawTruck()
+
+
+    def animationDown(self):
+        '''
+        Función para efectuar la animación del descenso de la plataforma.
+        '''
+        # descendemos el nivel de la plataforma a ymin
+        if self.altura > self.Ymin:
+            if self.collided_cube is not None:        
+                
+                # Update the platform height and the collided cube's position
+                self.altura -= 0.05
+                self.collided_cube.Position[1] -= 0.3
+
+                # Draw the collided cube in its new position
+                self.collided_cube.draw()
+        else:
+            # eliminamos el collided_cube de la lista Cubos
+            if self.collided_cube in self.Cubos:
+                self.Cubos.remove(self.collided_cube)
+
+                # restauramos la dirección del montacargas a aleatoria
+                self.Direction[0] = random.random()
+                self.Direction[2] = random.random()
+
+                # normalizamos
+                m = math.sqrt(self.Direction[0] * self.Direction[0] + self.Direction[2] * self.Direction[2])
+                self.Direction[0] /= m
+                self.Direction[2] /= m
+
+                # actualizamos la velocidad
+                self.Direction[0] *= self.vel
+                self.Direction[2] *= self.vel
+
+                # reseteamos estado collision y la referencia al collided_cube
+                self.estado = EstadosMontacargas.NAVEGACION
+                self.collided_cube = None
+                            
+                new_x = self.Position[0] + self.Direction[0]
+                new_z = self.Position[2] + self.Direction[2]
+
+                self.Position[0] = new_x
+                self.Position[2] = new_z
 
 
     def update(self):
@@ -197,7 +224,7 @@ class Montacargas:
     def collision_detection(self):            
         for cube in self.Cubos:
             # if self != cube and self.collided_cube == None and self.collision == False:
-            if self != cube and self.collided_cube == None and self.estado != EstadosMontacargas.COLISION:
+            if self != cube and self.collided_cube == None and self.estado != EstadosMontacargas.COLISION and cube.colisionado == False:
                 d_x = self.Position[0] - cube.Position[0]
                 d_z = self.Position[2] - cube.Position[2]
                 d_c = math.sqrt(d_x * d_x + d_z * d_z)
@@ -205,6 +232,8 @@ class Montacargas:
                 if d_c - (self.radius + cube.radius) < 0.0:
                     self.estado = EstadosMontacargas.COLISION # actualizamos el estado del montacargas a COLISION
                     self.collided_cube = cube  # guardamos la referencia al cubo colisionado
+                    self.collision_time = time.time() # guardamos el momento de la colisión
+                    cube.colisionado = True
 
                     # detenemos el vector de dirección
                     self.Direction[0] = 0
@@ -349,7 +378,7 @@ class Montacargas:
         glScalef(self.scale, self.scale, self.scale)
 
         # Calculate the rotation angle based on the normalized direction
-        angle = math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi)
+        angle = math.atan2(self.Direction[0], self.Direction[2]) * (90 / math.pi)
 
         # Translate to the center of the truck
         glTranslatef(1.0, 2.5, 1.0)
