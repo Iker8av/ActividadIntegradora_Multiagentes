@@ -61,14 +61,28 @@ class Montacargas:
         #Se cambia la magnitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel
+    
+    def collision_detection(self):            
+        for cube in self.Cubos:
+            if  self != cube and \
+                self.collided_cube == None and \
+                self.estado != EstadosMontacargas.COLISION and \
+                cube.colisionado == False:
 
+                d_x = self.Position[0] - cube.Position[0]
+                d_z = self.Position[2] - cube.Position[2]
+                d_c = math.sqrt(d_x * d_x + d_z * d_z)
+                
+                if d_c - (self.radius + cube.radius) < 0.0:
+                    self.estado = EstadosMontacargas.COLISION # actualizamos el estado del montacargas a COLISION
+                    self.collided_cube = cube  # guardamos la referencia al cubo colisionado
+                    self.collision_time = time.time() # guardamos el momento de la colisión
+                    cube.colisionado = True # actualizamos el estado del cubo en particular
 
     def random_movement(self):
         '''
         Función para generar un movimiento aleatorio del objeto.
-        '''
-        self.drawTruck()
-
+        ''' 
         # Movemos al montacargas a una nueva posición
         new_x = self.Position[0] + self.Direction[0]
         new_z = self.Position[2] + self.Direction[2]
@@ -88,7 +102,6 @@ class Montacargas:
         
         # verificamos si el montacargas colisionó con un cubo en su nueva posición
         self.collision_detection()
-    
 
     def platform_animation(self):
         '''
@@ -108,7 +121,6 @@ class Montacargas:
 
         else:
             self.estado = EstadosMontacargas.REORIENTACION
-
 
     def advance_to_destiny(self):
         '''
@@ -164,7 +176,6 @@ class Montacargas:
 
         self.drawTruck()
 
-
     def animationDown(self):
         '''
         Función para efectuar la animación del descenso de la plataforma.
@@ -207,7 +218,6 @@ class Montacargas:
                 self.Position[0] = new_x
                 self.Position[2] = new_z
 
-
     def update(self):
         if (self.estado == EstadosMontacargas.NAVEGACION):
             self.random_movement()
@@ -219,25 +229,6 @@ class Montacargas:
             self.advance_to_destiny()
         elif (self.estado == EstadosMontacargas.DEPOSITANDO):
             self.animationDown()
-
-
-    def collision_detection(self):            
-        for cube in self.Cubos:
-            # if self != cube and self.collided_cube == None and self.collision == False:
-            if self != cube and self.collided_cube == None and self.estado != EstadosMontacargas.COLISION and cube.colisionado == False:
-                d_x = self.Position[0] - cube.Position[0]
-                d_z = self.Position[2] - cube.Position[2]
-                d_c = math.sqrt(d_x * d_x + d_z * d_z)
-                
-                if d_c - (self.radius + cube.radius) < 0.0:
-                    self.estado = EstadosMontacargas.COLISION # actualizamos el estado del montacargas a COLISION
-                    self.collided_cube = cube  # guardamos la referencia al cubo colisionado
-                    self.collision_time = time.time() # guardamos el momento de la colisión
-                    cube.colisionado = True
-
-                    # detenemos el vector de dirección
-                    self.Direction[0] = 0
-                    self.Direction[2] = 0
 
     def drawRectangle(self, x, y, z, width, height, depth):
         glColor3f(0.925, 0.19, 0.03)
