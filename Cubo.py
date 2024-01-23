@@ -18,6 +18,7 @@ class Cubo:
         self.radius = math.sqrt(4)
         self.color = color
         self.colisionado = False
+        self.Rotation = [0,0,0,0]
 
         #vertices del cubo
         self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
@@ -69,9 +70,19 @@ class Cubo:
         glEnd()
     
     def draw(self):
+        if (self.colisionado): return
+        
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
+        glRotate(self.Rotation[0], self.Rotation[1], self.Rotation[2], self.Rotation[3])
         glScaled(self.scale[0], self.scale[1], self.scale[2])
         glColor3f(self.color[0], self.color[1], self.color[2])
+        self.drawFaces()
+        glPopMatrix()
+        
+    def modifyPosition(self, x, y, z):
+        glPushMatrix()
+        glColor3f(self.color[0], self.color[1], self.color[2])
+        glTranslatef(x, y, z)
         self.drawFaces()
         glPopMatrix()

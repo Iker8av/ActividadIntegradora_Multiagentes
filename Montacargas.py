@@ -30,10 +30,16 @@ class Montacargas:
         self.collided_cube = None
         
         self.Ymin = 0.9
-        self.Ymax = 10
+        self.Ymax = 4
         self.estado = EstadosMontacargas.NAVEGACION
         self.altura = self.Ymin
 
+
+        self.target_rotation_angle = 180.0 # ángulo deseado al centro (0,0,0)
+        self.current_rotation_angle = 0.0
+        self.rotation_speed = 1.0  #velocidad de rotación
+        
+        
         self.target_rotation_angle = 180.0 # ángulo deseado al centro (0,0,0)
         self.current_rotation_angle = 0.0
         self.rotation_speed = 1.0  #velocidad de rotación
@@ -60,6 +66,10 @@ class Montacargas:
         #Se cambia la magnitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel
+        
+        self.target_rotation_angle = 180 # ángulo deseado al centro (0,0,0)
+        self.current_rotation_angle = 0
+        self.rotation_speed = 1.0  #velocidad de rotación
     
     def collision_detection(self):            
         for cube in self.Cubos:
@@ -75,6 +85,7 @@ class Montacargas:
                 if d_c - (self.radius + cube.radius) < 0.0:
                     self.estado = EstadosMontacargas.COLISION # actualizamos el estado del montacargas a COLISION
                     self.collided_cube = cube  # guardamos la referencia al cubo colisionado
+                    cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
                     cube.colisionado = True # actualizamos el estado del cubo en particular
 
     def random_movement(self):
@@ -99,6 +110,8 @@ class Montacargas:
             self.Position[2] += self.Direction[2] 
         
         # verificamos si el montacargas colisionó con un cubo en su nueva posición
+        self.target_rotation_angle = math.atan2(-self.Position[0], -self.Position[2]) * (180 / math.pi)
+        self.current_rotation_angle = math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi)
         self.collision_detection()
 
     def platform_animation(self):
@@ -110,13 +123,6 @@ class Montacargas:
         
         if self.altura < self.Ymax:
                 self.altura += 0.05
-                
-                self.collided_cube.draw()
-
-                # posición del cubo en la plataforma montacargas
-                self.collided_cube.Position[0] = self.Position[0] - 4.0
-                self.collided_cube.Position[1] = (self.altura * self.altura) + self.collided_cube.radius
-                self.collided_cube.Position[2] = self.Position[2] + 4.0
         else:
             self.estado = EstadosMontacargas.REORIENTACION
 
@@ -149,6 +155,7 @@ class Montacargas:
                 # movemos al cubo colisionado igualmente al centro
                 self.collided_cube.Position[0] += self.Direction[0]
                 self.collided_cube.Position[2] += self.Direction[2]
+                # self.collided_cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
 
                 # checamos si hemos llegado al centro
                 if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
@@ -168,9 +175,10 @@ class Montacargas:
             self.estado = EstadosMontacargas.AVANDESTINO
 
         # Calcular la dirección basada en el ángulo actual de rotación
-        radians = math.radians(self.current_rotation_angle)
+        radians = math.radians(self.current_rotation_angle + 90)
         self.Direction[0] = math.cos(radians) * self.vel
         self.Direction[2] = math.sin(radians) * self.vel
+        self.collided_cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
 
         self.drawTruck()
 
@@ -267,44 +275,47 @@ class Montacargas:
         glEnd()
         
     def drawPlatform(self, x, platform_height, z, width, height, depth):
+        glPushMatrix()
         glColor3f(0.925, 0.19, 0.03)
+        glTranslatef(0, platform_height, 0)
         glBegin(GL_QUADS)
         # Bottom face
-        glVertex3f(x, platform_height, z)
-        glVertex3f(x + width, platform_height, z)
-        glVertex3f(x + width, platform_height + height, z)
-        glVertex3f(x, platform_height + height, z)
+        glVertex3f(x, 0, z)
+        glVertex3f(x + width, 0, z)
+        glVertex3f(x + width, 0 + height, z)
+        glVertex3f(x, 0 + height, z)
 
         # Top face
-        glVertex3f(x, platform_height, z + depth)
-        glVertex3f(x + width, platform_height, z + depth)
-        glVertex3f(x + width, platform_height + height, z + depth)
-        glVertex3f(x, platform_height + height, z + depth)
+        glVertex3f(x, 0, z + depth)
+        glVertex3f(x + width, 0, z + depth)
+        glVertex3f(x + width, 0 + height, z + depth)
+        glVertex3f(x, 0 + height, z + depth)
 
         # Front face
-        glVertex3f(x, platform_height, z)
-        glVertex3f(x + width, platform_height, z)
-        glVertex3f(x + width, platform_height, z + depth)
-        glVertex3f(x, platform_height, z + depth)
+        glVertex3f(x, 0, z)
+        glVertex3f(x + width, 0, z)
+        glVertex3f(x + width, 0, z + depth)
+        glVertex3f(x, 0, z + depth)
 
         # Back face
-        glVertex3f(x, platform_height + height, z)
-        glVertex3f(x + width, platform_height + height, z)
-        glVertex3f(x + width, platform_height + height, z + depth)
-        glVertex3f(x, platform_height + height, z + depth)
+        glVertex3f(x, 0 + height, z)
+        glVertex3f(x + width, 0 + height, z)
+        glVertex3f(x + width, 0 + height, z + depth)
+        glVertex3f(x, 0 + height, z + depth)
 
         # Left face
-        glVertex3f(x, platform_height, z)
-        glVertex3f(x, platform_height + height, z)
-        glVertex3f(x, platform_height + height, z + depth)
-        glVertex3f(x, platform_height, z + depth)
+        glVertex3f(x, 0, z)
+        glVertex3f(x, 0 + height, z)
+        glVertex3f(x, 0 + height, z + depth)
+        glVertex3f(x, 0, z + depth)
 
         # Right face
-        glVertex3f(x + width, platform_height, z)
-        glVertex3f(x + width, platform_height + height, z)
-        glVertex3f(x + width, platform_height + height, z + depth)
-        glVertex3f(x + width, platform_height, z + depth)
+        glVertex3f(x + width, 0, z)
+        glVertex3f(x + width, 0 + height, z)
+        glVertex3f(x + width, 0 + height, z + depth)
+        glVertex3f(x + width, 0, z + depth)
         glEnd()
+        glPopMatrix()
 
     def drawCylinder(self, x, y, z, radius, height, orientation, slices=30):
         slices = int(slices)
@@ -365,31 +376,30 @@ class Montacargas:
         
         glScalef(self.scale, self.scale, self.scale)
 
-        angle = math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi)
-
-        glTranslatef(1.0, 2.5, 1.0)
+        angle = math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi) 
 
         glRotatef(angle, 0, 1, 0)
-
-        glTranslatef(-1.0, -2.5, -1.0)
+        
+        if (self.collided_cube): 
+            self.collided_cube.modifyPosition(0 , self.altura + self.collided_cube.radius, 0)
 
         # Base y techo
-        self.drawRectangle(0.0, 1.0, 0.0, 4.0, 1.0, 2.0)
-        self.drawRectangle(0.0, 4.0, 0.0, 2.2, 0.5, 2.0)
+        self.drawRectangle(0.0, 1.0, 0.0, 2.0, 1.0, -4.0)
+        self.drawRectangle(0.0, 4.0, 0.0, 2.0, 0.5, -2.2)
         
         # Plataforma
-        self.drawPlatform(-2.0, self.altura, 0.0, 2.0, 0.3, 2.0)
+        self.drawPlatform(0.0, self.altura, 0.0, 2.0, 0.3, 2.0)
         
         # Pilares
-        self.drawCylinder(0.2, 2.0, 0.2, 0.2, 2.0, 'y')
-        self.drawCylinder(0.4, 2.0, 1.8, 0.2, 2.0, 'y')
-        self.drawCylinder(2.0, 2.0, 1.8, 0.2, 2.0, 'y')
-        self.drawCylinder(2.0, 2.0, 0.2, 0.2, 2.0, 'y')
+        self.drawCylinder(0.2, 2.0, -0.2, 0.2, 2.0, 'y')
+        self.drawCylinder(1.8, 2.0, -0.4, 0.2, 2.0, 'y')
+        self.drawCylinder(1.8, 2.0, -2.0, 0.2, 2.0, 'y')
+        self.drawCylinder(0.2, 2.0, -2.0, 0.2, 2.0, 'y')
         
         # Ruedas
-        self.drawCylinder(0.7, 1.0, -0.5, 0.5, 0.5, 'z')
-        self.drawCylinder(3.2, 1.0, -0.5, 0.5, 0.5, 'z')
-        self.drawCylinder(0.7, 1.0, 2.0, 0.5, 0.5, 'z')
-        self.drawCylinder(3.2, 1.0, 2.0, 0.5, 0.5, 'z')
+        self.drawCylinder(-0.5, 1.0, -0.7, 0.5, 0.5, 'z')
+        self.drawCylinder(-0.5, 1.0, -3.2, 0.5, 0.5, 'z')
+        self.drawCylinder(2.0, 1.0, -0.7, 0.5, 0.5, 'z')
+        self.drawCylinder(2.0, 1.0, -3.2, 0.5, 0.5, 'z')
         
         glPopMatrix()
