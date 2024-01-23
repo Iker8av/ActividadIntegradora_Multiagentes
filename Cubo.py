@@ -21,8 +21,16 @@ class Cubo:
         self.Rotation = [0,0,0,0]
 
         #vertices del cubo
-        self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
+        pointsCube = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0,-1.0], [-1.0, 1.0,-1.0]])
+        # Calculate center of the cube
+        center = np.mean(pointsCube, axis=0)
+
+        # Calculate half side length
+        half_side_length = np.max(np.abs(pointsCube - center))
+
+        # Adjust the coordinates to center the cube
+        self.points = pointsCube - center + [half_side_length, half_side_length, half_side_length]
         
         self.DimBoard = dim
         #Se inicializa una posicion aleatoria en el tablero

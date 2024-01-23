@@ -85,7 +85,6 @@ class Montacargas:
                 if d_c - (self.radius + cube.radius) < 0.0:
                     self.estado = EstadosMontacargas.COLISION # actualizamos el estado del montacargas a COLISION
                     self.collided_cube = cube  # guardamos la referencia al cubo colisionado
-                    cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
                     cube.colisionado = True # actualizamos el estado del cubo en particular
 
     def random_movement(self):
@@ -155,7 +154,6 @@ class Montacargas:
                 # movemos al cubo colisionado igualmente al centro
                 self.collided_cube.Position[0] += self.Direction[0]
                 self.collided_cube.Position[2] += self.Direction[2]
-                # self.collided_cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
 
                 # checamos si hemos llegado al centro
                 if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
@@ -167,18 +165,13 @@ class Montacargas:
         '''
         Función para efectuar la animación de la rotación del montacargas hacia el punto destino.
         '''
-        if self.current_rotation_angle < self.target_rotation_angle:
-            self.current_rotation_angle += self.rotation_speed
-            if self.current_rotation_angle > self.target_rotation_angle:
-                self.current_rotation_angle = self.target_rotation_angle
-        else:
-            self.estado = EstadosMontacargas.AVANDESTINO
+        self.current_rotation_angle = self.target_rotation_angle
+        self.estado = EstadosMontacargas.AVANDESTINO
 
         # Calcular la dirección basada en el ángulo actual de rotación
-        radians = math.radians(self.current_rotation_angle + 90)
+        radians = math.radians(self.current_rotation_angle )
         self.Direction[0] = math.cos(radians) * self.vel
         self.Direction[2] = math.sin(radians) * self.vel
-        self.collided_cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
 
         self.drawTruck()
 
@@ -381,7 +374,7 @@ class Montacargas:
         glRotatef(angle, 0, 1, 0)
         
         if (self.collided_cube): 
-            self.collided_cube.modifyPosition(0 , self.altura + self.collided_cube.radius, 0)
+            self.collided_cube.modifyPosition(0, self.altura + (self.collided_cube.radius / 4), 0)
 
         # Base y techo
         self.drawRectangle(0.0, 1.0, 0.0, 2.0, 1.0, -4.0)
