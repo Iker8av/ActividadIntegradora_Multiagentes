@@ -154,7 +154,6 @@ class Montacargas:
                 # movemos al cubo colisionado igualmente al centro
                 self.collided_cube.Position[0] += self.Direction[0]
                 self.collided_cube.Position[2] += self.Direction[2]
-                # self.collided_cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
 
                 # checamos si hemos llegado al centro
                 if abs(self.Position[0]) < self.radius and abs(self.Position[2]) < self.radius:
@@ -166,11 +165,6 @@ class Montacargas:
         '''
         Función para efectuar la animación de la rotación del montacargas hacia el punto destino.
         '''
-        # if self.current_rotation_angle < self.target_rotation_angle:
-        #     self.current_rotation_angle += self.rotation_speed
-        #     if self.current_rotation_angle > self.target_rotation_angle:
-        #         self.current_rotation_angle = self.target_rotation_angle
-        # else:
         self.current_rotation_angle = self.target_rotation_angle
         self.estado = EstadosMontacargas.AVANDESTINO
 
@@ -178,7 +172,6 @@ class Montacargas:
         radians = math.radians(self.current_rotation_angle )
         self.Direction[0] = math.cos(radians) * self.vel
         self.Direction[2] = math.sin(radians) * self.vel
-        # self.collided_cube.Rotation = [math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi), 0, 1, 0]
 
         self.drawTruck()
 
