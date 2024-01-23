@@ -47,7 +47,7 @@ montacargas = []
 nMontacargas = 5
 
 cubos = []
-nCubos = 15
+nCubos = 25
 
 def Axis():
     glShadeModel(GL_FLAT)
@@ -122,7 +122,7 @@ def drawMainCube():
 def Init():
     screen = pygame.display.set_mode(
         (screen_width, screen_height), DOUBLEBUF | OPENGL)
-    pygame.display.set_caption("OpenGL: cubos")
+    pygame.display.set_caption("OpenGL: Actividad Integradora 1")
     
     loadImage()
     
