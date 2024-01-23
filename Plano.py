@@ -43,11 +43,8 @@ DimBoard = 200
 
 pygame.init()
 
-#cubo = Cubo(DimBoard, 1.0)
 montacargas = []
 nMontacargas = 5
-
-cybertroca = Montacargas()
 
 cubos = []
 nCubos = 15
@@ -141,11 +138,13 @@ def Init():
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     
     for i in range(nCubos):
-        cubos.append(Cubo(DimBoard, 0.0, [3,3,3], [0.34, 0.19, 0.1]))
-        
+        cubos.append(Cubo(DimBoard, [5,5,5], [0.34, 0.19, 0.1], False))
+
     for i in range(nMontacargas):
-        montacargas.append(Cubo(DimBoard, 1.0, [3,3,3], [0,0,0]))
-        
+        montacargas.append(Montacargas(dim=DimBoard, 
+                                       vel=1.0,
+                                       scale=5,
+                                       cubos=cubos))
     
 def loadImage():
     img = pygame.image.load("./Texturas/asfalto.jpg").convert()
@@ -182,13 +181,12 @@ def display():
     drawFloor()
     drawMainCube()
     
-    for cube in cubos:
-        cube.draw()
-        cube.update()
-        
-    for montacarga in montacargas:
-        montacarga.draw()
-        montacarga.update()
+    for obj in cubos:
+        obj.draw()
+
+    for cybertroca in montacargas:
+        cybertroca.drawTruck()
+        cybertroca.update()
     
 done = False
 Init()
@@ -198,7 +196,6 @@ while not done:
             done = True
 
     display()
-    cybertroca.drawTruck()
 
     pygame.display.flip()
     pygame.time.wait(10)

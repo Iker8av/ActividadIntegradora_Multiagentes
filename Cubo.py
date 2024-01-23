@@ -1,6 +1,4 @@
-#Autor: Ivan Olmos Pineda
-
-
+from typing import Optional
 import pygame
 from pygame.locals import *
 
@@ -15,12 +13,13 @@ import numpy as np
 
 class Cubo:
     
-    def __init__(self, dim, vel, scale, color):
+    def __init__(self, dim, scale, color, colisionado):
         self.scale = scale
-        self.radius = math.sqrt(3) 
-        self.isCollided = False
+        self.radius = math.sqrt(4)
         self.color = color
-        
+        self.colisionado = False
+        self.Rotation = [0,0,0,0]
+
         #vertices del cubo
         self.points = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0,-1.0], [-1.0, 1.0,-1.0]])
@@ -31,53 +30,6 @@ class Cubo:
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
         self.Position.append(5.0)
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
-        #Se inicializa un vector de direccion aleatorio
-        self.Direction = []
-        self.Direction.append(random.random())
-        self.Direction.append(5.0)
-        self.Direction.append(random.random())
-        #Se normaliza el vector de direccion
-        m = math.sqrt(self.Direction[0]*self.Direction[0] + self.Direction[2]*self.Direction[2])
-        self.Direction[0] /= m
-        self.Direction[2] /= m
-        #Se cambia la maginitud del vector direccion
-        self.Direction[0] *= vel
-        self.Direction[2] *= vel        
-
-    def update(self):
-        if (self.isCollided): return
-        new_x = self.Position[0] + self.Direction[0]
-        new_z = self.Position[2] + self.Direction[2]
-        
-        # detecc de que el objeto no se salga del area de navegacion
-        if(abs(new_x) <= self.DimBoard):
-            self.Position[0] = new_x
-        else:
-            self.Direction[0] *= -1.0
-            self.Position[0] += self.Direction[0]
-        
-        if(abs(new_z) <= self.DimBoard):
-            self.Position[2] = new_z
-        else:
-            self.Direction[2] *= -1.0
-            self.Position[2] += self.Direction[2] 
-            
-    def collision(self, listCubes):        
-        nextPosition = [self.Position[0] + self.Direction[0], self.Position[1] + self.Direction[1], self.Position[2] + self.Direction[2]]
-        
-        for cube in listCubes:
-            if (cube == self): return
-            
-            nextCubePos = [cube.Position[0] + cube.Direction[0], cube.Position[1] + cube.Direction[1], cube.Position[2] + cube.Direction[2]]
-            euclideanDistance = math.sqrt(math.pow(nextCubePos[0] - nextPosition[0], 2) + 
-                                          math.pow(nextCubePos[2] - nextPosition[2], 2))
-                        
-            if (euclideanDistance <= cube.radius + self.radius):
-                self.isCollided = True
-                self.Direction = [0,0,0]
-                cube.isCollided = True
-                cube.Direction = [0,0,0]
-                break
 
     def drawFaces(self):
         glBegin(GL_QUADS)
@@ -118,9 +70,19 @@ class Cubo:
         glEnd()
     
     def draw(self):
+        if (self.colisionado): return
+        
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
+        glRotate(self.Rotation[0], self.Rotation[1], self.Rotation[2], self.Rotation[3])
         glScaled(self.scale[0], self.scale[1], self.scale[2])
         glColor3f(self.color[0], self.color[1], self.color[2])
+        self.drawFaces()
+        glPopMatrix()
+        
+    def modifyPosition(self, x, y, z):
+        glPushMatrix()
+        glColor3f(self.color[0], self.color[1], self.color[2])
+        glTranslatef(x, y, z)
         self.drawFaces()
         glPopMatrix()
