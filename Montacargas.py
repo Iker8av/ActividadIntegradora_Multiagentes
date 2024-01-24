@@ -39,11 +39,6 @@ class Montacargas:
         self.current_rotation_angle = 0.0
         self.rotation_speed = 1.0  #velocidad de rotación
         
-        
-        self.target_rotation_angle = 180.0 # ángulo deseado al centro (0,0,0)
-        self.current_rotation_angle = 0.0
-        self.rotation_speed = 1.0  #velocidad de rotación
-        
         self.DimBoard = dim
         
         #Se inicializa una posicion aleatoria en el tablero
@@ -71,7 +66,10 @@ class Montacargas:
         self.current_rotation_angle = 0
         self.rotation_speed = 1.0  #velocidad de rotación
     
-    def collision_detection(self):            
+    def collision_detection(self):
+        '''
+        Función para detectar colisión de un montacargas con un cubo.
+        ''' 
         for cube in self.Cubos:
             if  self != cube and \
                 self.collided_cube == None and \
@@ -216,6 +214,9 @@ class Montacargas:
                 self.Position[2] = new_z
 
     def update(self):
+        '''
+        Función que sirve como mapa de diferentes estados del montacargas.
+        ''' 
         if (self.estado == EstadosMontacargas.NAVEGACION):
             self.random_movement()
         elif (self.estado == EstadosMontacargas.COLISION):
