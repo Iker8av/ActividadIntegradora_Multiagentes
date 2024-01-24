@@ -1,1 +1,1 @@
-{"model_type": "AlmacenModel", "time_stamp": "2024-01-23 18:01:43.340076", "agentpy_version": "0.1.5", "python_version": "3.11.", "experiment": true, "scheduled_runs": 150, "completed": true, "random": true, "record": false, "sample_size": 30, "iterations": 5, "run_time": "0:00:06.825223"}
+{"model_type": "AlmacenModel", "time_stamp": "2024-01-23 19:39:45.661203", "agentpy_version": "0.1.5", "python_version": "3.11.", "experiment": true, "scheduled_runs": 1, "completed": true, "random": true, "record": false, "sample_size": 1, "iterations": 1, "run_time": "0:00:00.017172"}
