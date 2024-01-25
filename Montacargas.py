@@ -34,10 +34,9 @@ class Montacargas:
         self.estado = EstadosMontacargas.NAVEGACION
         self.altura = self.Ymin
 
-
         self.target_rotation_angle = 180.0 # ángulo deseado al centro (0,0,0)
         self.current_rotation_angle = 0.0
-        self.rotation_speed = 1.0  #velocidad de rotación
+        self.rotation_speed = 4.0  #velocidad de rotación
         
         self.DimBoard = dim
         
@@ -61,15 +60,8 @@ class Montacargas:
         #Se cambia la magnitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel
-        
-        self.target_rotation_angle = 180 # ángulo deseado al centro (0,0,0)
-        self.current_rotation_angle = 0
-        self.rotation_speed = 1.0  #velocidad de rotación
     
-    def collision_detection(self):
-        '''
-        Función para detectar colisión de un montacargas con un cubo.
-        ''' 
+    def collision_detection(self):            
         for cube in self.Cubos:
             if  self != cube and \
                 self.collided_cube == None and \
@@ -107,8 +99,6 @@ class Montacargas:
             self.Position[2] += self.Direction[2] 
         
         # verificamos si el montacargas colisionó con un cubo en su nueva posición
-        self.target_rotation_angle = math.atan2(-self.Position[0], -self.Position[2]) * (180 / math.pi)
-        self.current_rotation_angle = math.atan2(self.Direction[0], self.Direction[2]) * (180 / math.pi)
         self.collision_detection()
 
     def platform_animation(self):
@@ -122,6 +112,8 @@ class Montacargas:
                 self.altura += 0.05
         else:
             self.estado = EstadosMontacargas.REORIENTACION
+            self.current_rotation_angle = math.atan2(self.Direction[2], self.Direction[0]) * (180 / math.pi) 
+            self.target_rotation_angle = math.atan2(-self.Position[2], -self.Position[0]) * (180 / math.pi) 
 
     def advance_to_destiny(self):
         '''
@@ -163,11 +155,27 @@ class Montacargas:
         '''
         Función para efectuar la animación de la rotación del montacargas hacia el punto destino.
         '''
-        self.current_rotation_angle = self.target_rotation_angle
-        self.estado = EstadosMontacargas.AVANDESTINO
+        
+        # Calcular la diferencia entre los ángulos
+        angle_difference = self.target_rotation_angle - self.current_rotation_angle
+
+        # Calcular el incremento basado en la velocidad de rotación y el tiempo transcurrido
+        rotation_increment = self.rotation_speed 
+
+        if abs(angle_difference) > 0:
+            # Si la diferencia de ángulo es mayor que el incremento, rotar en consecuencia
+            rotation_direction = 1.0 if angle_difference > 0 else -1.0
+            self.current_rotation_angle += rotation_direction * rotation_increment
+        else:
+            # Si la diferencia de ángulo es menor que el incremento, establecer el ángulo deseado
+            self.current_rotation_angle = self.target_rotation_angle
+
+        if abs(angle_difference) < rotation_increment:
+            # Si la diferencia es muy pequeña, pasar al siguiente estado
+            self.estado = EstadosMontacargas.AVANDESTINO
 
         # Calcular la dirección basada en el ángulo actual de rotación
-        radians = math.radians(self.current_rotation_angle )
+        radians = math.radians(self.current_rotation_angle)
         self.Direction[0] = math.cos(radians) * self.vel
         self.Direction[2] = math.sin(radians) * self.vel
 
@@ -214,9 +222,6 @@ class Montacargas:
                 self.Position[2] = new_z
 
     def update(self):
-        '''
-        Función que sirve como mapa de diferentes estados del montacargas.
-        ''' 
         if (self.estado == EstadosMontacargas.NAVEGACION):
             self.random_movement()
         elif (self.estado == EstadosMontacargas.COLISION):
