@@ -23,6 +23,20 @@ class EstadosMontacargas(Enum):
 class Montacargas:
     
     def __init__(self, dim, vel, scale, cubos):
+        """
+        Constructor de la clase Montacargas.
+
+        Parámetros:
+        - self: Instancia de la clase.
+        - dim: Dimensión del tablero.
+        - vel: Velocidad del montacargas.
+        - scale: Escala para la figura.
+        - cubos: Lista de cubos en el almacén.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         self.radius = 10
         self.scale = scale
         self.vel = vel
@@ -36,32 +50,43 @@ class Montacargas:
 
         self.target_rotation_angle = 180.0 # ángulo deseado al centro (0,0,0)
         self.current_rotation_angle = 0.0
-        self.rotation_speed = 4.0  #velocidad de rotación
+        self.rotation_speed = 4.0  # velocidad de rotación
         
         self.DimBoard = dim
         
-        #Se inicializa una posicion aleatoria en el tablero
+        # Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
         self.Position.append(5.0)
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
         
-        #Se inicializa un vector de direccion aleatorio
+        # Se inicializa un vector de direccion aleatorio
         self.Direction = []
         self.Direction.append(random.random())
         self.Direction.append(5.0)
         self.Direction.append(random.random())
         
-        #Se normaliza el vector de direccion
+        # Se normaliza el vector de direccion
         m = math.sqrt(self.Direction[0]*self.Direction[0] + self.Direction[2]*self.Direction[2])
         self.Direction[0] /= m
         self.Direction[2] /= m
         
-        #Se cambia la magnitud del vector direccion
+        # Se cambia la magnitud del vector direccion
         self.Direction[0] *= vel
         self.Direction[2] *= vel
     
-    def collision_detection(self):            
+    def collision_detection(self):
+        """
+        Función que realiza la detección de colisiones entre el montacargas y los cubos en el almacén.
+        Actualiza el estado del montacargas a EstadosMontacargas.COLISION si hay colisión.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """     
+               
         for cube in self.Cubos:
             if  self != cube and \
                 self.collided_cube == None and \
@@ -78,9 +103,17 @@ class Montacargas:
                     cube.colisionado = True # actualizamos el estado del cubo en particular
 
     def random_movement(self):
-        '''
-        Función para generar un movimiento aleatorio del objeto.
-        ''' 
+        """
+        Función que genera un movimiento aleatorio del montacargas en el tablero.
+        Realiza la detección de colisiones en la nueva posición.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         # Movemos al montacargas a una nueva posición
         new_x = self.Position[0] + self.Direction[0]
         new_z = self.Position[2] + self.Direction[2]
@@ -102,11 +135,16 @@ class Montacargas:
         self.collision_detection()
 
     def platform_animation(self):
-        '''
-        Función para efectuar la animación de la plataforma.
+        """
+        Función que efectúa la animación de la plataforma después de una detección de colisión.
+        Incrementa la altura de la plataforma y cambia de estado cuando alcanza la altura máxima.
         
-        - Se ejecuta inmediatamente después de la detección de una colisión.
-        '''
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
         
         if self.altura < self.Ymax:
                 self.altura += 0.05
@@ -116,9 +154,17 @@ class Montacargas:
             self.target_rotation_angle = math.atan2(-self.Position[2], -self.Position[0]) * (180 / math.pi) 
 
     def advance_to_destiny(self):
-        '''
-        Función para avanzar hacia el destino de entrega (centro del sistema).
-        '''
+        """
+        Función que avanza el montacargas hacia el destino de entrega (centro del sistema).
+        Cambia al estado EstadosMontacargas.DEPOSITANDO cuando llega al centro.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         if self.collided_cube is not None:
 
             # volteamos la dirección del montacargas
@@ -152,9 +198,16 @@ class Montacargas:
                     self.estado = EstadosMontacargas.DEPOSITANDO
 
     def reorientacion(self):
-        '''
-        Función para efectuar la animación de la rotación del montacargas hacia el punto destino.
-        '''
+        """
+        Función que realiza la animación de rotación del montacargas hacia el punto destino.
+        Calcula la diferencia de ángulos entre la rotación actual y la deseada.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
         
         # Calcular la diferencia entre los ángulos
         angle_difference = self.target_rotation_angle - self.current_rotation_angle
@@ -182,9 +235,16 @@ class Montacargas:
         self.drawTruck()
 
     def animationDown(self):
-        '''
-        Función para efectuar la animación del descenso de la plataforma.
-        '''
+        """
+        Función que realiza la animación del descenso de la plataforma después de la entrega del cubo.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         # descendemos el nivel de la plataforma a ymin
         if self.altura > self.Ymin:
             if self.collided_cube is not None:        
@@ -222,6 +282,17 @@ class Montacargas:
                 self.Position[2] = new_z
 
     def update(self):
+        """
+        Función que actualiza el estado del montacargas según la lógica definida para cada estado.
+        Llama a las funciones correspondientes dependiendo del estado actual.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         if (self.estado == EstadosMontacargas.NAVEGACION):
             self.random_movement()
         elif (self.estado == EstadosMontacargas.COLISION):
@@ -234,8 +305,24 @@ class Montacargas:
             self.animationDown()
 
     def drawRectangle(self, x, y, z, width, height, depth):
+        """
+        Función que dibuja un rectángulo en el espacio tridimensional con las dimensiones especificadas.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        - x: Posición del rectángulo en el eje x.
+        - y: Posición del rectángulo en el eje y.
+        - z: Posición del rectángulo en el eje z.
+        - width: Ancho del rectángulo.
+        - height: Altura del rectángulo.
+        - depth: Profundidad del rectángulo.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
         glColor3f(0.925, 0.19, 0.03)
         glBegin(GL_QUADS)
+        
         # Bottom face
         glVertex3f(x, y, z)
         glVertex3f(x + width, y, z)
@@ -274,10 +361,26 @@ class Montacargas:
         glEnd()
         
     def drawPlatform(self, x, platform_height, z, width, height, depth):
+        """
+        Función que dibuja la plataforma del montacargas en el espacio tridimensional con las dimensiones especificadas.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        - x: Posición de la plataforma en el eje x.
+        - platform_height: altura de la plataforma para las animaciones.
+        - z: Posición de la plataforma en el eje z.
+        - width: Ancho de la plataforma.
+        - height: Altura de la plataforma.
+        - depth: Profundidad de la plataforma.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
         glPushMatrix()
         glColor3f(0.925, 0.19, 0.03)
         glTranslatef(0, platform_height, 0)
         glBegin(GL_QUADS)
+        
         # Bottom face
         glVertex3f(x, 0, z)
         glVertex3f(x + width, 0, z)
@@ -317,6 +420,23 @@ class Montacargas:
         glPopMatrix()
 
     def drawCylinder(self, x, y, z, radius, height, orientation, slices=30):
+        """
+        Función que dibuja un cilindro en el espacio tridimensional con las dimensiones y orientación especificadas.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        - x: Posición del cilindro en el eje x.
+        - y: Posición del cilindro en el eje y.
+        - z: Posición del cilindro en el eje z.
+        - radius: radio de la base del cilindro.
+        - height: altura del cilindro.
+        - orientation: eje en el que se orientará el cilindro.
+        - slices: número de pedazos para dibujar el cilindro.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         slices = int(slices)
         glBegin(GL_QUAD_STRIP)
         glColor3f(0.0, 0.0, 0.0)
@@ -370,6 +490,15 @@ class Montacargas:
         glEnd()
         
     def drawTruck(self):
+        """
+        Función que dibuja el montacargas en el espacio tridimensional con sus componentes.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
         glPushMatrix()
         glTranslatef(self.Position[0], self.Position[1], self.Position[2])
         

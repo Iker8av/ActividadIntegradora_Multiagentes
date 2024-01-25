@@ -14,13 +14,26 @@ import numpy as np
 class Cubo:
     
     def __init__(self, dim, scale, color, colisionado):
+        """
+        Función que inicializa un objeto de la clase Cubo con los parámetros especificados.
+
+        Parámetros:
+        - dim (int): Dimensión del tablero en el que se encuentra el cubo.
+        - scale (list): Lista que especifica la escala del cubo en los ejes x, y, z.
+        - color (list): Lista que representa el color del cubo en formato RGB.
+        - colisionado (bool): Indica si el cubo ha colisionado con otro objeto.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         self.scale = scale
         self.radius = math.sqrt(4)
         self.color = color
         self.colisionado = False
         self.Rotation = [0,0,0,0]
 
-        #vertices del cubo
+        # vertices del cubo
         pointsCube = np.array([[-1.0,-1.0, 1.0], [1.0,-1.0, 1.0], [1.0,-1.0,-1.0], [-1.0,-1.0,-1.0],
                                 [-1.0, 1.0, 1.0], [1.0, 1.0, 1.0], [1.0, 1.0,-1.0], [-1.0, 1.0,-1.0]])
         # Calculate center of the cube
@@ -33,6 +46,7 @@ class Cubo:
         self.points = pointsCube - center + [half_side_length, half_side_length, half_side_length]
         
         self.DimBoard = dim
+        
         #Se inicializa una posicion aleatoria en el tablero
         self.Position = []
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
@@ -40,6 +54,16 @@ class Cubo:
         self.Position.append(random.randint(-1 * self.DimBoard, self.DimBoard))
 
     def drawFaces(self):
+        """
+        Función que dibuja las caras de un cubo utilizando OpenGL.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
+        
         glBegin(GL_QUADS)
         glVertex3fv(self.points[0])
         glVertex3fv(self.points[1])
@@ -78,6 +102,15 @@ class Cubo:
         glEnd()
     
     def draw(self):
+        """
+        Función que dibuja el cubo en la posición actual y con la escala y rotación especificadas.
+        
+        Parámetros:
+        - self: Instancia de la clase.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
         if (self.colisionado): return
         
         glPushMatrix()
@@ -89,6 +122,17 @@ class Cubo:
         glPopMatrix()
         
     def modifyPosition(self, x, y, z):
+        """
+        Función que modifica temporalmente la posición del cubo para realizar operaciones específicas.
+
+        Parámetros:
+        - x: Nueva coordenada x de la posición.
+        - y: Nueva coordenada y de la posición.
+        - z: Nueva coordenada z de la posición.
+        
+        Retorna:
+        No hay valor de retorno.
+        """
         glPushMatrix()
         glColor3f(self.color[0], self.color[1], self.color[2])
         glTranslatef(x, y, z)
