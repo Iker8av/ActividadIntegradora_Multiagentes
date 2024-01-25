@@ -17,13 +17,13 @@ from Montacargas import Montacargas
 screen_width = 1000
 screen_height = 700
 
-#vc para el obser.
+# vc para el obser.
 FOVY=60.0
 ZNEAR=0.01
 ZFAR=900.0
 
-#Variables para definir la posicion del observador
-#gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z)
+# Variables para definir la posicion del observador
+# gluLookAt(EYE_X,EYE_Y,EYE_Z,CENTER_X,CENTER_Y,CENTER_Z,UP_X,UP_Y,UP_Z)
 EYE_X=300.0
 EYE_Y=200.0
 EYE_Z=300.0
@@ -34,7 +34,7 @@ UP_X=0
 UP_Y=1
 UP_Z=0
 
-#Variables para dibujar los ejes del sistema
+# Variables para dibujar los ejes del sistema
 X_MIN=-500
 X_MAX=500
 Y_MIN=-500
@@ -42,7 +42,7 @@ Y_MAX=500
 Z_MIN=-500
 Z_MAX=500
 
-#Dimension del plano
+# Dimension del plano
 DimBoard = 200
 
 # Variables para el control del observador
@@ -60,22 +60,34 @@ nMontacargas = 5
 cubos = []
 nCubos = 25
 
-# Función para dibujar ejes del sistema -> x en rojo, y en verde, z en azul.
 def Axis():
+    """
+    Función que dibuja los ejes del sistema en OpenGL (x en rojo, y en verde, z en azul).
+    
+    Parámetros:
+    No hay parámetros.
+        
+    Retorna:
+    No hay valor de retorno.
+    """
+    
     glShadeModel(GL_FLAT)
     glLineWidth(3.0)
+    
     #X axis in red
     glColor3f(1.0,0.0,0.0)
     glBegin(GL_LINES)
     glVertex3f(X_MIN,0.0,0.0)
     glVertex3f(X_MAX,0.0,0.0)
     glEnd()
+    
     #Y axis in green
     glColor3f(0.0,1.0,0.0)
     glBegin(GL_LINES)
     glVertex3f(0.0,Y_MIN,0.0)
     glVertex3f(0.0,Y_MAX,0.0)
     glEnd()
+    
     #Z axis in blue
     glColor3f(0.0,0.0,1.0)
     glBegin(GL_LINES)
@@ -84,8 +96,17 @@ def Axis():
     glEnd()
     glLineWidth(1.0)
 
-# Función para modificar posición del observador
 def lookat():
+    """
+    Función que modifica la posición del observador basándose en el ángulo theta.
+    
+    Parámetros:
+    No hay parámetros.
+        
+    Retorna:
+    No hay valor de retorno.
+    """
+    
     global EYE_X
     global EYE_Z
     global radius
@@ -94,8 +115,17 @@ def lookat():
     glLoadIdentity()
     gluLookAt(EYE_X, EYE_Y, EYE_Z, CENTER_X, CENTER_Y, CENTER_Z, UP_X, UP_Y, UP_Z)
 
-
 def drawMainCube():
+    """
+    Función que dibuja un cubo principal en el espacio tridimensional.
+    
+    Parámetros:
+    No hay parámetros.
+        
+    Retorna:
+    No hay valor de retorno.
+    """
+    
     glPushMatrix()
     glTranslatef(0, 15, 0)
     glScaled(15, 15, 15)
@@ -142,15 +172,37 @@ def drawMainCube():
     glEnd()
     glPopMatrix()
 
-# Función para cargar texto
-def drawText(x, y, text, color, background):                                                
+def drawText(x, y, text, color, background):       
+    """
+    Función que carga un texto en la posición especificada.
+    
+    Parámetros:
+    - x: Posición del texto en el eje x.
+    - x: Posición del texto en el eje y.
+    - text: Texto a mostrar.
+    - color: Color del texto.
+    - background: Fondo del texto.
+        
+    Retorna:
+    No hay valor de retorno.
+    """   
+                                          
     textSurface = font.render(text, False, color, background)
     textData = pygame.image.tostring(textSurface, "RGBA", True)
     glWindowPos2d(x, y)
     glDrawPixels(textSurface.get_width(), textSurface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, textData)
 
-# Función para cargar texturas.
 def loadImage(path):
+    """
+    Función que carga una textura desde un archivo de imagen.
+    
+    Parámetros:
+    - path: Dirección de la imagen.
+        
+    Retorna:
+    No hay valor de retorno.
+    """
+    
     img = pygame.image.load(path).convert()
     textureData = pygame.image.tostring(img, "RGB", 1)
     image_width, image_height = img.get_rect().size
@@ -162,13 +214,20 @@ def loadImage(path):
     glActiveTexture(GL_TEXTURE0)
     glBindTexture(GL_TEXTURE_2D, bgImgGL)
     
-
-# Función de configuracion iniciales
 def Init():
+    """
+    Función que define las configuraciones iniciales del entorno OpenGL y carga de agentes en el sistema.
+    
+    Parámetros:
+    No hay parámetros.
+        
+    Retorna:
+    No hay valor de retorno.
+    """
+    
     screen = pygame.display.set_mode(
         (screen_width, screen_height), DOUBLEBUF | OPENGL)
     pygame.display.set_caption("OpenGL: Actividad Integradora 1")
-
 
     loadImage("./Texturas/asfalto.jpg")
     
@@ -183,7 +242,6 @@ def Init():
     glEnable(GL_DEPTH_TEST)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) 
     
-    
     for i in range(nCubos):
         cubos.append(Cubo(DimBoard, [5,5,5], [0.34, 0.19, 0.1], False))
 
@@ -193,9 +251,17 @@ def Init():
                                        scale=5,
                                        cubos=cubos))
 
-
-# Función para dibujar el paralelogramo del suelo.
 def drawFloor():
+    """
+    Función que dibuja un paralelogramo como suelo en OpenGL.
+    
+    Parámetros:
+    No hay parámetros.
+        
+    Retorna:
+    No hay valor de retorno.
+    """
+    
     glEnable(GL_TEXTURE_2D)
     glColor3f(0.65, 0.65, 0.65)
     glBegin(GL_QUADS)
@@ -210,8 +276,17 @@ def drawFloor():
     glEnd()
     glDisable(GL_TEXTURE_2D)
 
-# Función para dibujar los objetos
 def display():  
+    """
+    Función principal de visualización en OpenGL.
+    
+    Parámetros:
+    No hay parámetros.
+        
+    Retorna:
+    No hay valor de retorno.
+    """
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     
     Axis()
@@ -237,7 +312,6 @@ def display():
     for cybertroca in montacargas:
         cybertroca.drawTruck()
         cybertroca.update()
-
 
 done = False
 Init()
